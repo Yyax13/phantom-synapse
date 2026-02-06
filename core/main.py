@@ -88,7 +88,6 @@ def scan_worker(ip, port):
     return port, status
 
 def main():
-    banner()
     parser = argparse.ArgumentParser(
         description="Port Scanner TCP SYN Scan."
     )
@@ -97,10 +96,17 @@ def main():
         "-p", "--ports", default=defaultPorts, help="Intervalo: 22-80 ou lista: 22,80,443"
     )
     parser.add_argument(
-        "-t", "--superfastultraincridblethreads", default=175, help="Threads to async scan"
+        "-t", "--superfastultraincridblethreads", type=int, default=175, help="Threads to async scan"
+    )
+    parser.add_argument(
+        "-q", "--quietplsbecauseimatwork", default=False, help="Just print Open ports, don't show the banner", action="store_true",
     )
     args = parser.parse_args()
     ip = resolve(args.target)
+    
+    if not args.quietplsbecauseimatwork:
+        banner()
+    
     print(Fore.CYAN + f"[+] Alvo: {ip}")
 
     ports = set()
@@ -131,7 +137,8 @@ def main():
                 if status == "open":
                     print(Fore.GREEN + f"[+] {port:5}/tcp open")
                 elif status == "closed":
-                    print(Fore.RED + f"[-] {port:5}/tcp closed")
+                    if not args.quietplsbecauseimatwork:
+                        print(Fore.RED + f"[-] {port:5}/tcp closed")
                 else:
                     print(Fore.YELLOW + f"[?] {port:5}/tcp filtered")
 
