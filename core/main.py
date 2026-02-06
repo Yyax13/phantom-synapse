@@ -38,7 +38,7 @@ stop_scan = False
 def sigint_handler(sig, frame):
     global stop_scan
     stop_scan = True
-    print(Fore.RED + "\n[!] Ctrl+C detectado, parando scan...")
+    print(Fore.RED + "\x1b[1G[!] Ctrl+C detectado, parando scan...")
     exit(0)
 
 signal.signal(signal.SIGINT, sigint_handler)
@@ -58,11 +58,11 @@ def scan_port(ip, port):
     synack = sr1(ipRaw / syn, timeout=2, verbose=False)
     
     if synack is None:
-        state = "filtered"
+        state = "closed"
         return state
     
     if not synack.haslayer(TCP):
-        state = "filtered"
+        state = "closed"
         return state
     
     tcp = synack[TCP];
@@ -114,7 +114,7 @@ def main():
         if status == "open":
             print(Fore.GREEN + f"[+] {port:5}/tcp open")
         elif status == "closed":
-            print(Fore.WHITE + f"[-] {port:5}/tcp closed")
+            print(Fore.RED + f"[-] {port:5}/tcp closed")
         else:
             print(Fore.YELLOW + f"[?] {port:5}/tcp filtered")
             
